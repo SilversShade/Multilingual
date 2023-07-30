@@ -9,6 +9,6 @@ public class Index : PageModel
     {
         if (User.Identity is {IsAuthenticated: true})
             return Page();
-        return LocalRedirect("/Identity/Account/Login");
+        return RedirectToPage("/Account/Login", new {area = "Identity"});
     }
 }
