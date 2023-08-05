@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.EntityFrameworkCore;
 using Multilingual.Data;
-using Multilingual.Services;
+using Multilingual.Extensions;
 using Multilingual.Transformers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,11 +22,9 @@ builder.Services.Configure<RouteOptions>(options =>
 {
     options.AppendTrailingSlash = true;
     options.LowercaseUrls = true;
-    options.LowercaseQueryStrings = true;
 });
 
-builder.Services.AddRazorPages()
-    .AddRazorRuntimeCompilation()
+var razorBuilder = builder.Services.AddRazorPages()
     .AddRazorPagesOptions(options =>
     {
         options.Conventions.Add(
@@ -35,7 +32,12 @@ builder.Services.AddRazorPages()
                 new KebabCaseParameterTransformer()));
     });
 
-builder.Services.AddTransient<IEmailSender, EmailSender>();
+if (builder.Environment.IsDevelopment())
+{
+    razorBuilder.AddRazorRuntimeCompilation();
+}
+
+builder.Services.AddEmailSender();
 
 var app = builder.Build();
 
