@@ -2,11 +2,11 @@
 
 public class EmailSenderSettings
 {
-    public string EmailAddress { get; set; }
+    public string EmailAddress { get; set; } = null!;
 
-    public string EmailPassword { get; set; }
-    
-    public string SmtpClientHost { get; set; }
+    public string EmailPassword { get; set; } = null!;
+
+    public string SmtpClientHost { get; set; } = null!;
 
     public int SmtpClientPort { get; set; }
 }
