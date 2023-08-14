@@ -20,16 +20,16 @@ public class EmailSender : IEmailSender
         _configuration = configuration;
     }
     
-    public Task SendEmailAsync(string email, string subject, string htmlMessage)
+    public async Task SendEmailAsync(string email, string subject, string htmlMessage)
     {
         var emailConfig = _configuration.GetSection("EmailSenderData").Get<EmailSenderSettings>();
 
-        var message = _emailMessageFormatter.FormatMessage(emailConfig!.EmailAddress, email, subject, htmlMessage, mailMessage =>
+        using var message = _emailMessageFormatter.FormatMessage(emailConfig!.EmailAddress, email, subject, htmlMessage, mailMessage =>
         {
             mailMessage.IsBodyHtml = true;
         });
-        
-        var smtpClient = _smtpClientConfigurator.ConfigureSmtpClient(emailConfig.SmtpClientHost,
+
+        using var smtpClient = _smtpClientConfigurator.ConfigureSmtpClient(emailConfig.SmtpClientHost,
             emailConfig.SmtpClientPort,
             new NetworkCredential(emailConfig.EmailAddress, emailConfig.EmailPassword),
             client =>
@@ -37,6 +37,6 @@ public class EmailSender : IEmailSender
                 client.EnableSsl = true;
             });
         
-        return smtpClient.SendMailAsync(message);
+        await smtpClient.SendMailAsync(message);
     }
 }
